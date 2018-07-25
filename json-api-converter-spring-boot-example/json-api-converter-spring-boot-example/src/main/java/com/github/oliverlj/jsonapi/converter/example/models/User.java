@@ -2,6 +2,9 @@ package com.github.oliverlj.jsonapi.converter.example.models;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 
@@ -16,8 +19,11 @@ public class User implements Serializable {
 	@Id
 	private Long id;
 
+	@Email
+	@NotNull
 	private String email;
 
-	private String userName;
+	@NotNull
+	private String username;
 
 }

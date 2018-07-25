@@ -20,7 +20,7 @@ public class TestDataLoader {
 	public void setup() {
 		IntStream.rangeClosed(1, 2).mapToObj(i -> {
 			var user = new User();
-			user.setUserName("user" + i);
+			user.setUsername("user" + i);
 			user.setEmail("user" + i + "@domain.com");
 			return user;
 		}).forEach(userController::create);

@@ -19,7 +19,6 @@ import org.springframework.http.converter.json.AbstractJackson2HttpMessageConver
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.github.jasminb.jsonapi.DeserializationFeature;
 import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.jasminb.jsonapi.ResourceConverter;
@@ -33,8 +32,7 @@ public class JsonApiHttpMessageConverter extends AbstractJackson2HttpMessageConv
 		super(objectMapper, new MediaType("application", "vnd.api+json", Charset.defaultCharset()));
 
 		Objects.requireNonNull(objectMapper, "An ObjectMapper must be provided.");
-		Objects.requireNonNull(basePackages,
-				"Base packages to look for jsonapi-converter @Type annotations must be provided.");
+		Objects.requireNonNull(basePackages, "Base packages to look for jsonapi-converter @Type annotations must be provided.");
 
 		resourceConverter = new ResourceConverter(objectMapper);
 
@@ -60,8 +58,7 @@ public class JsonApiHttpMessageConverter extends AbstractJackson2HttpMessageConv
 	@Override
 	public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
 		JavaType javaType = getJavaType(type, contextClass);
-		return javaType.getRawClass().equals(JSONAPIDocument.class) && javaType.hasGenericTypes()
-				&& super.canRead(type, contextClass, mediaType);
+		return super.canRead(type, contextClass, mediaType) && resourceConverter.isRegisteredType(javaType.getRawClass());
 	}
 
 	@Override
@@ -70,8 +67,7 @@ public class JsonApiHttpMessageConverter extends AbstractJackson2HttpMessageConv
 	}
 
 	@Override
-	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage)
-			throws IOException, HttpMessageNotWritableException {
+	protected void writeInternal(Object object, Type type, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
 
 		JSONAPIDocument jsonapiDocument = (JSONAPIDocument) object;
 
@@ -87,22 +83,14 @@ public class JsonApiHttpMessageConverter extends AbstractJackson2HttpMessageConv
 	}
 
 	@Override
-	public Object read(Type type, Class<?> contextClass, HttpInputMessage inputMessage)
-			throws IOException, HttpMessageNotReadableException {
+	public Object read(Type type, Class<?> contextClass, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
 		JavaType javaType = getJavaType(type, contextClass);
-		TypeBindings typeBindings = javaType.getBindings();
 
-		// JSONAPIDocument has only 1 generic type e.g. JSONAPIDocument<User> or
-		// JSONAPIDocument<List<User>>
-		JavaType containerType = typeBindings.getBoundType(0);
-		Class<?> containerTypeClass = containerType.getRawClass();
-
-		if (Iterable.class.isAssignableFrom(containerTypeClass)) {
-			TypeBindings iterableTypeBindings = containerType.getBindings();
-			JavaType itemType = iterableTypeBindings.getBoundType(0);
-			return resourceConverter.readDocumentCollection(inputMessage.getBody(), itemType.getRawClass());
+		if (Iterable.class.isAssignableFrom(javaType.getRawClass())) {
+			JavaType itemType = javaType.getBindings().getBoundType(0);
+			return resourceConverter.readDocumentCollection(inputMessage.getBody(), itemType.getRawClass()).get();
 		} else {
-			return resourceConverter.readDocument(inputMessage.getBody(), containerTypeClass);
+			return resourceConverter.readDocument(inputMessage.getBody(), javaType.getRawClass()).get();
 		}
 	}
 
