@@ -22,7 +22,7 @@ import com.github.jasminb.jsonapi.ResourceConverter;
  */
 @Configuration
 @ConditionalOnClass(ResourceConverter.class)
-@Import(JsonApiResponseEntityExceptionHandler.class)
+@Import({ JsonApiResponseEntityExceptionHandler.class, FilterParametersConfiguration.class })
 public class JsonApiHttpMessageConvertersConfiguration {
 
     @Autowired
