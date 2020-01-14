@@ -3,6 +3,8 @@ package com.github.oliverlj.jsonapi.configuration.parameters;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +27,7 @@ public class FilterParametersTest {
     @Autowired
     private MockMvc mvc;
 
+    @Disabled
     @Test
     public void shouldParseFilterParameters() throws Exception {
         // Given
