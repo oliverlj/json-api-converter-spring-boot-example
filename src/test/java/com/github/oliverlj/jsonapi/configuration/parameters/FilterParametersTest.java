@@ -3,35 +3,34 @@ package com.github.oliverlj.jsonapi.configuration.parameters;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.oliverlj.jsonapi.configuration.EnableJsonApiTypes;
-import com.github.oliverlj.jsonapi.configuration.parameters.FilterParametersTest.MockController;
+import com.gitlab.oliverlj.jsonapi.configuration.parameters.FilterParameters;
 
-@SpringJUnitConfig
-@WebMvcTest(MockController.class)
+@AutoConfigureMockMvc
+@SpringBootTest(classes = FilterParametersTest.MockApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class FilterParametersTest {
 
     @Autowired
     private MockMvc mvc;
 
-    @Disabled
     @Test
     public void shouldParseFilterParameters() throws Exception {
         // Given
-        MockHttpServletRequestBuilder request = get("/").param("filter[att1][EQ]", "value1").param("filter[att1][EQ]", "value2 ").param("filter[att1][EQ]", "")
+        MockHttpServletRequestBuilder request = get("/mock").param("filter[att1][EQ]", "value1").param("filter[att1][EQ]", "value2 ").param("filter[att1][EQ]", "")
                 .param("filter[att2][EQ]", "value3");
 
         // When
@@ -47,12 +46,17 @@ public class FilterParametersTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.filters.att2.EQ").value("value3"));
     }
 
-    @EnableJsonApiTypes
     @SpringBootApplication
     public static class MockApplication {
+        
+        @Bean
+        public MockController mockController() {
+            return new MockController();
+        }
     }
 
     @RestController
+    @RequestMapping("mock")
     public static class MockController {
 
         @GetMapping

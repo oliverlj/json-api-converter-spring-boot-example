@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.oliverlj.jsonapi.configuration.parameters.FilterOperator;
-import com.github.oliverlj.jsonapi.configuration.parameters.FilterParameters;
 import com.github.oliverlj.jsonapi.example.models.User;
-import com.github.oliverlj.jsonapi.exceptions.UnprocessableEntityException;
+import com.gitlab.oliverlj.jsonapi.configuration.parameters.FilterOperator;
+import com.gitlab.oliverlj.jsonapi.configuration.parameters.FilterParameters;
+import com.gitlab.oliverlj.jsonapi.exceptions.UnprocessableEntityException;
 
 import lombok.extern.slf4j.Slf4j;
 
